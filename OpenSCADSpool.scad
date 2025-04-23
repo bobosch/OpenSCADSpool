@@ -11,6 +11,11 @@ width = 59;
 flange_wall = 3.5;
 
 /* [Hidden] */
+flange_radius = flange_diameter / 2;
+barrel_radius = barrel_diameter / 2;
+bore_radius = bore_diameter / 2;
+outer_width = width + 2 * flange_wall;
+
 $fn = 200;
 
 union() {
@@ -21,14 +26,14 @@ union() {
 
 module flange() {
     linear_extrude(flange_wall) difference() {
-        circle(flange_diameter / 2);
-        circle(bore_diameter / 2);
+        circle(flange_radius);
+        circle(bore_radius);
     }
 }
 
 module barrel() {
     linear_extrude(width + 2 * flange_wall) difference() {
-        circle(barrel_diameter / 2);
-        circle(bore_diameter / 2);
+        circle(barrel_radius);
+        circle(bore_radius);
     }
 }
