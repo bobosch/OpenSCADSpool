@@ -13,6 +13,14 @@ width = 59;
 // Strength of the flange
 flange_wall = 3.5;
 
+/* Flange */
+// Number of cutouts to safe material and weight
+flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+// Cutout crossing width
+flange_cutout_crossing_width = 20;
+// Export as AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
+flange_cutout_keep = false; // [false, true]
+
 /* Barrel */
 // Type of the barrel
 barrel_type = "quick"; // [solid, quick]
@@ -24,6 +32,7 @@ flange_radius = flange_diameter / 2;
 barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
 outer_width = width + 2 * flange_wall;
+rounding_mesh_error = 0.001;
 
 $fn = 200;
 
@@ -48,6 +57,11 @@ if (show == "top") {
     }
 }
 
+if (flange_cutout_keep) {
+    flange_cutout();
+    if (show == "all") translate([0, 0, width + flange_wall]) flange_cutout();
+}
+
 /*********
 * Common *
 *********/
@@ -62,7 +76,19 @@ module tube(inner_radius, outer_radius, height) {
 * Flange *
 **********/
 module flange() {
+    difference() {
         tube(bore_radius, flange_radius, flange_wall);
+        flange_cutout();
+    }
+}
+
+module flange_cutout() {
+    if (flange_cutout_segments > -1) difference() {
+        tube(barrel_radius, flange_radius - 6, flange_wall);
+        for (i = [0 : 1 : flange_cutout_segments - 1]) {
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_wall]);
+        }
+    }
 }
 
 /*********
@@ -107,7 +133,7 @@ module barrel_quick(top) {
 
 module quick_hold_bottom(inner_radius) {
     a = (3.3 * 180) / (PI * inner_radius);
-    rotate_extrude(angle = 25) translate([inner_radius, 0]) quick_lug();
+    rotate_extrude(angle = 25) translate([inner_radius - rounding_mesh_error, 0]) quick_lug();
     rotate([0, 0, 25 + a]) {
         intersection() {
             rotate_extrude() translate([inner_radius, 0]) quick_lug();
@@ -118,10 +144,10 @@ module quick_hold_bottom(inner_radius) {
 
 module quick_hold_top(inner_radius) {
     a = (3.3 * 180) / (PI * inner_radius);
-    rotate_extrude(angle = 25) translate([inner_radius, 0]) mirror([1, 0, 0]) quick_lug();
+    rotate_extrude(angle = 25) translate([inner_radius + rounding_mesh_error, 0]) mirror([1, 0]) quick_lug();
     rotate([0, 0, a / -2]) {
         translate([0, 0, -3]) intersection() {
-            rotate_extrude() translate([inner_radius, 0]) mirror([1, 0, 0]) quick_lug();
+            rotate_extrude() translate([inner_radius, 0]) mirror([1, 0]) quick_lug();
             translate([inner_radius - 0.1, 0, -1.5]) rotate([0, 0, 45]) cube(3, center = true);
         }
         translate([inner_radius - 0.1, 0, -1.5]) rotate([0, 0, 45]) cube(3, center = true);
