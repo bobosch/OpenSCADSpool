@@ -20,6 +20,8 @@ flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 flange_cutout_crossing_width = 20;
 // Export as AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
 flange_cutout_keep = false; // [false, true]
+// Filament clip on the flange border
+flange_filament_clip = false; // [false, true]
 
 /* Barrel */
 // Type of the barrel
@@ -78,12 +80,13 @@ module tube(inner_radius, outer_radius, height) {
 module flange() {
     difference() {
         tube(bore_radius, flange_radius, flange_wall);
-        flange_cutout();
+        if (flange_cutout_segments > -1) flange_cutout();
+        if (flange_filament_clip) flange_filament_clip();
     }
 }
 
 module flange_cutout() {
-    if (flange_cutout_segments > -1) difference() {
+    difference() {
         tube(barrel_radius, flange_radius - 6, flange_wall);
         for (i = [0 : 1 : flange_cutout_segments - 1]) {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_wall]);
@@ -91,16 +94,23 @@ module flange_cutout() {
     }
 }
 
+module flange_filament_clip() {
+    rotate_extrude() translate([flange_radius - 3, flange_wall - 1.2]) filament_clip();
+}
+
+module filament_clip() {
+    r = 1.741 / 2;
+    p = [[-r, 0], [-0.808, 1.2], [0.808, 1.2], [r, 0]];
+    circle(r);
+    polygon(points = p, paths = [[0, 1, 2, 3]]);
+}
+
 /*********
 * Barrel *
 **********/
 module barrel(top) {
-    if (barrel_type == "solid") {
-        barrel_solid();
-    }
-    else if (barrel_type == "quick") {
-        barrel_quick(top);
-    }
+    if (barrel_type == "solid") barrel_solid();
+    else if (barrel_type == "quick") barrel_quick(top);
 }
 
 /* Solid barrel */
