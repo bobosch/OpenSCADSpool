@@ -22,7 +22,10 @@ This option keeps the cutout segment in the 3d model. You can use the slicer to 
 A notch in the flange border to hold the filament
 ![flange_filament_clip](Documentation/Images/flange_filament_clip.png)
 
-
 ### flange_filament_hole_bambu
 Two holes for filament fixation like on BambuLab spools.
 ![flange_filament_hole_bambu](Documentation/Images/flange_filament_hole_bambu.png)
+
+### flange_filament_hole_inclined
+Filament holes 45° inclined for easier filament insertion.
+![flange_filament_hole_inclined](Documentation/Images/flange_filament_hole_inclined.png)

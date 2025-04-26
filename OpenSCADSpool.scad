@@ -26,6 +26,8 @@ flange_filament_clip = false; // [false, true]
 flange_filament_hole_count = 4; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 // Filament holes BambuLab spool compatible
 flange_filament_hole_bambu = false; // [false, true]
+// Inclined filament holes
+flange_filament_hole_inclined = false; // [false, true]
 
 /* [Barrel] */
 // Type of the barrel
@@ -86,7 +88,8 @@ module flange() {
         tube(bore_radius, flange_radius, flange_wall);
         if (flange_cutout_segments > -1) flange_cutout();
         if (flange_filament_clip) flange_filament_clip();
-        if (flange_filament_hole_bambu) flange_filament_hole();
+        if (flange_filament_hole_bambu) flange_filament_hole(0);
+        if (flange_filament_hole_inclined) flange_filament_hole(45);
     }
 }
 
@@ -110,13 +113,13 @@ module filament_clip() {
     polygon(points = p, paths = [[0, 1, 2, 3]]);
 }
 
-module flange_filament_hole() {
+module flange_filament_hole(angle) {
     r = flange_radius - 3;
     s = 30;
     a = asin(s / (2 * r));
     for (i = [0 : 1 : flange_filament_hole_count - 1]) {
-        rotate([0, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, 0]) cylinder(h = flange_wall, r = 1.75);
-        rotate([0, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, 0]) cylinder(h = flange_wall, r = 1.75);
+        rotate([-angle, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, -2]) cylinder(h = flange_wall * 2 + 4, r = 1.75);
+        rotate([+angle, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, -2]) cylinder(h = flange_wall * 2 + 4, r = 1.75);
     }
 }
 
