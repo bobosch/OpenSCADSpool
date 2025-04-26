@@ -13,7 +13,7 @@ width = 59;
 // Strength of the flange
 flange_wall = 3.5;
 
-/* Flange */
+/* [Flange] */
 // Number of cutouts to safe material and weight
 flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 // Cutout crossing width
@@ -22,8 +22,12 @@ flange_cutout_crossing_width = 20;
 flange_cutout_keep = false; // [false, true]
 // Filament clip on the flange border
 flange_filament_clip = false; // [false, true]
+// Number of hole pairs
+flange_filament_hole_count = 4; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+// Filament holes BambuLab spool compatible
+flange_filament_hole_bambu = false; // [false, true]
 
-/* Barrel */
+/* [Barrel] */
 // Type of the barrel
 barrel_type = "quick"; // [solid, quick]
 // Barrel wall thickness (when not solid)
@@ -82,6 +86,7 @@ module flange() {
         tube(bore_radius, flange_radius, flange_wall);
         if (flange_cutout_segments > -1) flange_cutout();
         if (flange_filament_clip) flange_filament_clip();
+        if (flange_filament_hole_bambu) flange_filament_hole();
     }
 }
 
@@ -103,6 +108,16 @@ module filament_clip() {
     p = [[-r, 0], [-0.808, 1.2], [0.808, 1.2], [r, 0]];
     circle(r);
     polygon(points = p, paths = [[0, 1, 2, 3]]);
+}
+
+module flange_filament_hole() {
+    r = flange_radius - 3;
+    s = 30;
+    a = asin(s / (2 * r));
+    for (i = [0 : 1 : flange_filament_hole_count - 1]) {
+        rotate([0, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, 0]) cylinder(h = flange_wall, r = 1.75);
+        rotate([0, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, 0]) cylinder(h = flange_wall, r = 1.75);
+    }
 }
 
 /*********
