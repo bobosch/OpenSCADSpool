@@ -3,10 +3,13 @@ Parametrizable spool primary for 3d filament
 
 ## Parameters
 
+### Size
+All sizes in mm
+![size](Documentation/Images/size.png)
+
 ### flange_cutout_keep
 This option keeps the cutout segment in the 3d model. You can use the slicer to make a nice wall:
-![Selection in Slicer](Documentation/Images/cutout_slicer_select.png)
-![Result in Slicer](Documentation/Images/cutout_slicer_sliced.png)
+![flange_cutout_keep](Documentation/Images/flange_cutout_keep.png)
 
 1. Set "flange_cutout_keep" to true
 2. Export as AMF

@@ -32,8 +32,10 @@ flange_filament_hole_inclined = false; // [false, true]
 /* [Barrel] */
 // Type of the barrel
 barrel_type = "quick"; // [solid, quick]
-// Barrel wall thickness (when not solid)
-barrel_wall = 1.8;
+// Bore wall thickness (when barrel not solid)
+bore_wall = 1.8;
+// Barrel wall thickness (when barrel not solid)
+barrel_wall = 1.2;
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -140,22 +142,22 @@ module barrel_solid() {
 module barrel_quick(top) {
     height_split = (outer_width / 2) + 2.1;
     if (top) {
-        connector_radius = bore_radius + barrel_wall + 3.2;
-        tube(connector_radius, connector_radius + barrel_wall, height_split);
+        connector_radius = bore_radius + bore_wall + 3.2;
+        tube(connector_radius, connector_radius + bore_wall, height_split);
         translate([0, 0, height_split]) {
             for (i = [0:1:2]) {
                 rotate([0, 0, 120 * i]) quick_hold_top(connector_radius);
             }
         }
-        tube(barrel_radius - 1, barrel_radius, outer_width * 0.8);
+        tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.8);
     } else {
-        tube(bore_radius, bore_radius + barrel_wall, height_split);
+        tube(bore_radius, bore_radius + bore_wall, height_split);
         rotate([0, 0, -25]) translate([0, 0, height_split]) {
             for (i = [0:1:2]) {
-                rotate([0, 0, 120 * i]) quick_hold_bottom(bore_radius + barrel_wall);
+                rotate([0, 0, 120 * i]) quick_hold_bottom(bore_radius + bore_wall);
             }
         }
-        tube(barrel_radius - 1, barrel_radius, outer_width * 0.2);
+        tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.2);
     }
 }
 
