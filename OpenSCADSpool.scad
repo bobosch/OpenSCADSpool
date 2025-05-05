@@ -115,7 +115,7 @@ module flange_cutout_window() {
         union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_width]);
         }
-        cylinder(flange_width, barrel_radius, barrel_radius);
+        tube(0, barrel_radius, flange_width);
         tube(flange_radius - flange_wall, flange_radius, flange_width);
     }
 }
