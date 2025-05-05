@@ -12,6 +12,8 @@ bore_diameter = 57;
 width = 59;
 // Strength of the flange
 flange_width = 3.5;
+// Thickness of the outer flange border
+flange_wall = 6;
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
@@ -101,7 +103,7 @@ module flange() {
 /* Flange cutout */
 module flange_cutout() {
     difference() {
-        tube(barrel_radius, flange_radius - 6, flange_width);
+        tube(barrel_radius, flange_radius - flange_wall, flange_width);
         for (i = [0 : 1 : flange_cutout_segments - 1]) {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_width]);
         }
@@ -114,7 +116,7 @@ module flange_cutout_window() {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_width]);
         }
         cylinder(flange_width, barrel_radius, barrel_radius);
-        tube(flange_radius - 6, flange_radius, flange_width);
+        tube(flange_radius - flange_wall, flange_radius, flange_width);
     }
 }
 
