@@ -8,10 +8,10 @@ flange_diameter = 200;
 barrel_diameter = 81;
 // Hole diameter
 bore_diameter = 57;
-// Inner width of the spool. Overal width is width + 2 x flange_wall
+// Inner width of the spool. Overal width is width + 2 x flange_width
 width = 59;
 // Strength of the flange
-flange_wall = 3.5;
+flange_width = 3.5;
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
@@ -43,7 +43,7 @@ barrel_wall = 1.2;
 flange_radius = flange_diameter / 2;
 barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
-outer_width = width + 2 * flange_wall;
+outer_width = width + 2 * flange_width;
 rounding_mesh_error = 0.001;
 
 $fn = 200;
@@ -71,7 +71,7 @@ if (show == "top") {
 
 if (flange_cutout_keep) {
     flange_cutout();
-    if (show == "all") translate([0, 0, width + flange_wall]) flange_cutout();
+    if (show == "all") translate([0, 0, width + flange_width]) flange_cutout();
 }
 
 /*********
@@ -89,7 +89,7 @@ module tube(inner_radius, outer_radius, height) {
 **********/
 module flange() {
     difference() {
-        tube(bore_radius, flange_radius, flange_wall);
+        tube(bore_radius, flange_radius, flange_width);
         if (flange_cutout_segments > -1) flange_cutout();
         if (flange_cutout_crossing_window) flange_cutout_window();
         if (flange_filament_clip) flange_filament_clip();
@@ -101,9 +101,9 @@ module flange() {
 /* Flange cutout */
 module flange_cutout() {
     difference() {
-        tube(barrel_radius, flange_radius - 6, flange_wall);
+        tube(barrel_radius, flange_radius - 6, flange_width);
         for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_wall]);
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_width]);
         }
     }
 }
@@ -111,16 +111,16 @@ module flange_cutout() {
 module flange_cutout_window() {
     difference() {
         union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_wall]);
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_width]);
         }
-        cylinder(flange_wall, barrel_radius, barrel_radius);
-        tube(flange_radius - 6, flange_radius, flange_wall);
+        cylinder(flange_width, barrel_radius, barrel_radius);
+        tube(flange_radius - 6, flange_radius, flange_width);
     }
 }
 
 /* Filament clip */
 module flange_filament_clip() {
-    rotate_extrude() translate([flange_radius - 3, flange_wall - 1.2]) filament_clip();
+    rotate_extrude() translate([flange_radius - 3, flange_width - 1.2]) filament_clip();
 }
 
 module filament_clip() {
@@ -136,8 +136,8 @@ module flange_filament_hole(angle) {
     s = 30;
     a = asin(s / (2 * r));
     for (i = [0 : 1 : flange_filament_hole_count - 1]) {
-        rotate([-angle, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, -2]) cylinder(h = flange_wall * 2 + 4, r = 1.75);
-        rotate([+angle, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, -2]) cylinder(h = flange_wall * 2 + 4, r = 1.75);
+        rotate([-angle, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
+        rotate([+angle, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
     }
 }
 
