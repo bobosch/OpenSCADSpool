@@ -161,22 +161,35 @@ module barrel_quick(top) {
     height_split = (outer_width / 2) + 2.1;
     if (top) {
         connector_radius = bore_radius + bore_wall + 3.2;
+        // Bore wall
         tube(connector_radius, connector_radius + bore_wall, height_split);
+        // Chamfer
+        rotate_extrude() translate([bore_radius, flange_width]) chamfer(bore_wall + 3.2 + rounding_mesh_error);
+        // Connector
         translate([0, 0, height_split]) {
             for (i = [0:1:2]) {
                 rotate([0, 0, 120 * i]) quick_hold_top(connector_radius);
             }
         }
+        // Barrel wall
         tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.8);
     } else {
+        // Bore wall
         tube(bore_radius, bore_radius + bore_wall, height_split);
+        // Connector
         rotate([0, 0, -25]) translate([0, 0, height_split]) {
             for (i = [0:1:2]) {
                 rotate([0, 0, 120 * i]) quick_hold_bottom(bore_radius + bore_wall);
             }
         }
+        // Barrel wall
         tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.2);
     }
+}
+
+module chamfer(a) {
+    p = [[0, 0], [a, 0], [a, a]];
+    polygon(points = p, paths= [[0, 1, 2]]);
 }
 
 module quick_hold_bottom(inner_radius) {
