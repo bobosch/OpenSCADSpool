@@ -14,12 +14,14 @@ width = 59;
 flange_wall = 3.5;
 
 /* [Flange] */
-// Number of cutouts to safe material and weight
+// Number of cutouts to safe material and weight (-1: disable)
 flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-// Cutout crossing width
-flange_cutout_crossing_width = 20;
 // Export as AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
 flange_cutout_keep = false; // [false, true]
+// Cutout crossing width
+flange_cutout_crossing_width = 20;
+// Window width in the crossing (0: disable)
+flange_cutout_crossing_window = 0;
 // Filament clip on the flange border
 flange_filament_clip = false; // [false, true]
 // Number of hole pairs
@@ -89,12 +91,14 @@ module flange() {
     difference() {
         tube(bore_radius, flange_radius, flange_wall);
         if (flange_cutout_segments > -1) flange_cutout();
+        if (flange_cutout_crossing_window) flange_cutout_window();
         if (flange_filament_clip) flange_filament_clip();
         if (flange_filament_hole_bambu) flange_filament_hole(0);
         if (flange_filament_hole_inclined) flange_filament_hole(45);
     }
 }
 
+/* Flange cutout */
 module flange_cutout() {
     difference() {
         tube(barrel_radius, flange_radius - 6, flange_wall);
@@ -104,6 +108,17 @@ module flange_cutout() {
     }
 }
 
+module flange_cutout_window() {
+    difference() {
+        union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_wall]);
+        }
+        cylinder(flange_wall, barrel_radius, barrel_radius);
+        tube(flange_radius - 6, flange_radius, flange_wall);
+    }
+}
+
+/* Filament clip */
 module flange_filament_clip() {
     rotate_extrude() translate([flange_radius - 3, flange_wall - 1.2]) filament_clip();
 }
@@ -115,6 +130,7 @@ module filament_clip() {
     polygon(points = p, paths = [[0, 1, 2, 3]]);
 }
 
+/* Filament hole */
 module flange_filament_hole(angle) {
     r = flange_radius - 3;
     s = 30;
