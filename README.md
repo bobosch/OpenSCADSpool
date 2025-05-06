@@ -12,7 +12,7 @@ This option keeps the cutout segment in the 3d model. You can use the slicer to 
 ![flange_cutout_keep](Documentation/Images/flange_cutout_keep.png)
 
 1. Set "flange_cutout_keep" to true
-2. Export as AMF
+2. Export as 3MF or AMF
 3. Select cutout in slicer
 4. Change slicer parameters by object
    - Wall loops: 0

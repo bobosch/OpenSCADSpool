@@ -2,5 +2,5 @@ Width: 1280
 Height: 800
 Translation: 0, 0 , -16
 Rotation: 50, 0 ,-30
-Distance: 379
+Distance: 370
 FOV: 22

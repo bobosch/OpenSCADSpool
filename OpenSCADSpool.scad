@@ -24,6 +24,8 @@ flange_cutout_keep = false; // [false, true]
 flange_cutout_crossing_width = 20;
 // Window width in the crossing (0: disable)
 flange_cutout_crossing_window = 0;
+// Round cutout corners
+flange_cutout_fillet = 3;
 // Filament clip on the flange border
 flange_filament_clip = false; // [false, true]
 // Number of hole pairs
@@ -79,11 +81,15 @@ if (flange_cutout_keep || show == "cutout") {
 /*********
 * Common *
 *********/
-module tube(inner_radius, outer_radius, height) {
-    linear_extrude(height) difference() {
+module ring(inner_radius, outer_radius) {
+    difference() {
         circle(outer_radius);
         circle(inner_radius);
     }
+}
+
+module tube(inner_radius, outer_radius, height) {
+    linear_extrude(height) ring(inner_radius, outer_radius);
 }
 
 /*********
@@ -102,21 +108,21 @@ module flange() {
 
 /* Flange cutout */
 module flange_cutout() {
-    difference() {
-        tube(barrel_radius, flange_radius - flange_wall, flange_width);
+    linear_extrude(flange_width) offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
+        ring(barrel_radius, flange_radius - flange_wall);
         for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) cube([flange_radius, flange_cutout_crossing_width, flange_width]);
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) square([flange_radius, flange_cutout_crossing_width]);
         }
     }
 }
 
 module flange_cutout_window() {
-    difference() {
+    linear_extrude(flange_width) offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
         union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) cube([flange_radius, flange_cutout_crossing_window, flange_width]);
+            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) square([flange_radius, flange_cutout_crossing_window]);
         }
-        tube(0, barrel_radius, flange_width);
-        tube(flange_radius - flange_wall, flange_radius, flange_width);
+        circle(barrel_radius);
+        ring(flange_radius - flange_wall, flange_radius);
     }
 }
 
