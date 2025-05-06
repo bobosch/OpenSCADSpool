@@ -1,5 +1,5 @@
 // Render part of spool
-show = "bottom"; // [all, bottom, top]
+show = "bottom"; // [all, bottom, top, cutout]
 
 /* [Size] */
 // Spool outer diameter
@@ -71,7 +71,7 @@ if (show == "top") {
     }
 }
 
-if (flange_cutout_keep) {
+if (flange_cutout_keep || show == "cutout") {
     flange_cutout();
     if (show == "all") translate([0, 0, width + flange_width]) flange_cutout();
 }
