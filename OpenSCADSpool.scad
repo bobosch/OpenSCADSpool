@@ -24,6 +24,8 @@ flange_cutout_keep = false; // [false, true]
 flange_cutout_crossing_width = 20;
 // Window width in the crossing (0: disable)
 flange_cutout_crossing_window = 0;
+// Extend the crossing window to the bore (for cable tie)
+flange_cutout_crossing_window_bore = false; // [false, true]
 // Round cutout corners
 flange_cutout_fillet = 3;
 // Filament clip on the flange border
@@ -48,6 +50,7 @@ flange_radius = flange_diameter / 2;
 barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
 outer_width = width + 2 * flange_width;
+connector_radius = bore_radius + bore_wall + 3.2;
 rounding_mesh_error = 0.001;
 
 $fn = 200;
@@ -74,8 +77,8 @@ if (show == "top") {
 }
 
 if (flange_cutout_keep || show == "cutout") {
-    flange_cutout();
-    if (show == "all") translate([0, 0, width + flange_width]) flange_cutout();
+    linear_extrude(flange_width) flange_cutout();
+    if (show == "all") translate([0, 0, width + flange_width]) linear_extrude(flange_width) flange_cutout();
 }
 
 /*********
@@ -97,9 +100,11 @@ module tube(inner_radius, outer_radius, height) {
 **********/
 module flange() {
     difference() {
-        tube(bore_radius, flange_radius, flange_width);
-        if (flange_cutout_segments > -1) flange_cutout();
-        if (flange_cutout_crossing_window) flange_cutout_window();
+        linear_extrude(flange_width) difference() {
+            ring(bore_radius, flange_radius);
+            if (flange_cutout_segments > -1) flange_cutout();
+            if (flange_cutout_crossing_window) flange_cutout_window();
+        }
         if (flange_filament_clip) flange_filament_clip();
         if (flange_filament_hole_bambu) flange_filament_hole(0);
         if (flange_filament_hole_inclined) flange_filament_hole(45);
@@ -108,7 +113,7 @@ module flange() {
 
 /* Flange cutout */
 module flange_cutout() {
-    linear_extrude(flange_width) offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
+    offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
         ring(barrel_radius, flange_radius - flange_wall);
         for (i = [0 : 1 : flange_cutout_segments - 1]) {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) square([flange_radius, flange_cutout_crossing_width]);
@@ -117,11 +122,15 @@ module flange_cutout() {
 }
 
 module flange_cutout_window() {
-    linear_extrude(flange_width) offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
+    offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
         union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
             rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) square([flange_radius, flange_cutout_crossing_window]);
         }
-        circle(barrel_radius);
+        circle(flange_cutout_crossing_window_bore ?
+            (barrel_type == "solid" ?
+                    (bore_radius + barrel_wall) : (connector_radius + ((barrel_wall > bore_wall) ? barrel_wall : bore_wall))
+            ) : barrel_radius
+        );
         ring(flange_radius - flange_wall, flange_radius);
     }
 }
@@ -159,14 +168,16 @@ module barrel(top) {
 
 /* Solid barrel */
 module barrel_solid() {
-    tube(bore_radius, barrel_radius, outer_width / 2);
+    difference() {
+        tube(bore_radius, barrel_radius, outer_width / 2);
+        if(flange_cutout_crossing_window_bore) linear_extrude(outer_width / 2) flange_cutout_window();
+    }
 }
 
 /* Quick connect barrel */
 module barrel_quick(top) {
     height_split = (outer_width / 2) + 2.1;
     if (top) {
-        connector_radius = bore_radius + bore_wall + 3.2;
         // Bore wall
         tube(connector_radius, connector_radius + bore_wall, height_split);
         // Chamfer
@@ -178,7 +189,7 @@ module barrel_quick(top) {
             }
         }
         // Barrel wall
-        tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.8);
+        barrel_wall(outer_width * 0.8);
     } else {
         // Bore wall
         tube(bore_radius, bore_radius + bore_wall, height_split);
@@ -189,7 +200,25 @@ module barrel_quick(top) {
             }
         }
         // Barrel wall
-        tube(barrel_radius - barrel_wall, barrel_radius, outer_width * 0.2);
+        barrel_wall(outer_width * 0.2);
+    }
+}
+
+module barrel_wall(height) {
+    if(flange_cutout_crossing_window_bore) {
+        linear_extrude(height) difference() {
+            barrel_wall_cutout();
+            offset(r = -barrel_wall) barrel_wall_cutout();
+        }
+    } else {
+        tube(barrel_radius - barrel_wall, barrel_radius, height);
+    }
+}
+
+module barrel_wall_cutout() {
+    difference() {
+        circle(barrel_radius);
+        flange_cutout_window();
     }
 }
 

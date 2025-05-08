@@ -35,3 +35,7 @@ Two holes for filament fixation like on BambuLab spools.
 ### flange_filament_hole_inclined
 Filament holes 45° inclined for easier filament insertion.
 ![flange_filament_hole_inclined](Documentation/Images/flange_filament_hole_inclined.png)
+
+### flange_cutout_crossing_window_bore
+Extend crossing window to the bore and create a gap (for cable tie)
+![flange_cutout_crossing_window_bore](Documentation/Images/flange_cutout_crossing_window_bore.png)
