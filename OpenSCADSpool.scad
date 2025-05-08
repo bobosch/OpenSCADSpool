@@ -243,14 +243,13 @@ module quick_hold_top(inner_radius) {
     rotate_extrude(angle = 25) translate([inner_radius + rounding_mesh_error, 0]) mirror([1, 0]) quick_lug();
     rotate([0, 0, a / -2]) {
         translate([0, 0, -3]) intersection() {
-            rotate_extrude() translate([inner_radius, 0]) mirror([1, 0]) quick_lug();
-            translate([inner_radius - 0.1, 0, -1.5]) rotate([0, 0, 45]) cube(3, center = true);
+            rotate_extrude() translate([inner_radius, 0]) mirror([1, 0]) quick_lug(3);
+            translate([inner_radius - 0.1, 0, 0]) rotate([0, 0, 45]) cube([3, 3, 6], center = true);
         }
-        translate([inner_radius - 0.1, 0, -1.5]) rotate([0, 0, 45]) cube(3, center = true);
     }
 }
 
-module quick_lug() {
-    p = [[0, -2.932], [3, -1.2], [3, 0], [0, 0]];
+module quick_lug(height = 0) {
+    p = [[0, -2.932], [3, -1.2], [3, height], [0, height]];
     polygon(points = p, paths= [[0, 1, 2, 3]]);
 }
