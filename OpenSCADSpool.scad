@@ -44,6 +44,8 @@ barrel_type = "quick"; // [solid, quick]
 bore_wall = 1.8;
 // Barrel wall thickness (when barrel not solid)
 barrel_wall = 1.2;
+// How many percent of the barrel wall is on the bottom side
+barrel_wall_split_percent = 20;
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -189,7 +191,7 @@ module barrel_quick(top) {
             }
         }
         // Barrel wall
-        barrel_wall(outer_width * 0.8);
+        barrel_wall(flange_width + width * (1 - (barrel_wall_split_percent / 100)));
     } else {
         // Bore wall
         tube(bore_radius, bore_radius + bore_wall, height_split);
@@ -200,7 +202,7 @@ module barrel_quick(top) {
             }
         }
         // Barrel wall
-        barrel_wall(outer_width * 0.2);
+        barrel_wall(flange_width + width * (barrel_wall_split_percent / 100));
     }
 }
 
