@@ -71,21 +71,21 @@ rounding_mesh_error = 0.001;
 $fn = 200;
 
 if (show == "all" || show == "bottom") {
-    union() {
+    color([1, 1, 1]) union() {
         flange();
         barrel(false);
     }
 }
 
 if (show == "all" || show == "top") {
-    spool_show() union() {
+    spool_show() color([1, 1, 1]) union() {
         flange();
         barrel(true);
     }
 }
 
 if (flange_cutout_keep || show == "cutout") {
-    spool_show(true) linear_extrude(flange_width) flange_cutout();
+    spool_show(true) color([1, 1, 0]) linear_extrude(flange_width) flange_cutout();
 }
 
 /*********
