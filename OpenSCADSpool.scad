@@ -108,6 +108,12 @@ module tube(inner_radius, outer_radius, height) {
     linear_extrude(height) ring(inner_radius, outer_radius);
 }
 
+module segment_rotate(segments) {
+    for (i = [0 : 1 : segments - 1]) {
+        rotate([0, 0, (360 / segments) * i]) children();
+    }
+}
+
 /********
 * Spool *
 *********/
@@ -156,9 +162,7 @@ module flange_cutout_window() {
 }
 
 module flange_cutout_crossings(width) {
-    for (i = [0 : 1 : flange_cutout_segments - 1]) {
-        rotate([0, 0, (360 / flange_cutout_segments) * i]) flange_cutout_crossing(width);
-    }
+    segment_rotate(flange_cutout_segments) flange_cutout_crossing(width);
 }
 
 module flange_cutout_crossing(width) {
@@ -182,9 +186,9 @@ module flange_filament_hole(angle = 0) {
     r = flange_radius - 3;
     s = 30;
     a = asin(s / (2 * r));
-    for (i = [0 : 1 : flange_filament_hole_count - 1]) {
-        rotate([-angle, 0, (360 / flange_filament_hole_count) * i + a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
-        rotate([+angle, 0, (360 / flange_filament_hole_count) * i - a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
+    segment_rotate(flange_filament_hole_count) {
+        rotate([-angle, 0, + a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
+        rotate([+angle, 0, - a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
     }
 }
 
@@ -214,9 +218,7 @@ module barrel_quick(top) {
         rotate_extrude() translate([bore_radius, flange_width]) chamfer(bore_wall + 3.2 + rounding_mesh_error);
         // Connector
         translate([0, 0, height_split]) {
-            for (i = [0:1:2]) {
-                rotate([0, 0, 120 * i]) quick_hold_top(connector_radius);
-            }
+            segment_rotate(3) quick_hold_top(connector_radius);
         }
         // Barrel wall
         barrel_wall(flange_width + width * (1 - (barrel_wall_split_percent / 100)));
@@ -225,9 +227,7 @@ module barrel_quick(top) {
         tube(bore_radius, bore_radius + bore_wall, height_split);
         // Connector
         rotate([0, 0, -25]) translate([0, 0, height_split]) {
-            for (i = [0:1:2]) {
-                rotate([0, 0, 120 * i]) quick_hold_bottom(bore_radius + bore_wall);
-            }
+            segment_rotate(3) quick_hold_bottom(bore_radius + bore_wall);
         }
         // Barrel wall
         barrel_wall(flange_width + width * (barrel_wall_split_percent / 100));
