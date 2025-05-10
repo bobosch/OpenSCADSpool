@@ -47,12 +47,23 @@ barrel_wall = 1.2;
 // How many percent of the barrel wall is on the bottom side
 barrel_wall_split_percent = 20;
 
+/* [Label] */
+// Level meter
+label_level_meter = false; // [false, true]
+// Diameter of the content when full (0: max (flange_radius) )
+label_level_full_diameter = 172;
+// Show this value on full mark
+label_level_full_factor = 1000;
+// Font size
+label_level_font_size = 5.5;
+
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
 barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
 outer_width = width + 2 * flange_width;
 connector_radius = bore_radius + bore_wall + 3.2;
+label_level_full_radius = label_level_full_diameter / 2;
 rounding_mesh_error = 0.001;
 
 $fn = 200;
@@ -108,8 +119,9 @@ module flange() {
             if (flange_cutout_crossing_window) flange_cutout_window();
         }
         if (flange_filament_clip) flange_filament_clip();
-        if (flange_filament_hole_bambu) flange_filament_hole(0);
+        if (flange_filament_hole_bambu) flange_filament_hole();
         if (flange_filament_hole_inclined) flange_filament_hole(45);
+        if (label_level_meter) linear_extrude(.8) flange_level();
     }
 }
 
@@ -117,17 +129,14 @@ module flange() {
 module flange_cutout() {
     offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
         ring(barrel_radius, flange_radius - flange_wall);
-        for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_width / 2, 0]) square([flange_radius, flange_cutout_crossing_width]);
-        }
+        flange_cutout_crossings(flange_cutout_crossing_width);
+        if (label_level_meter && flange_cutout_crossing_window) offset(r = 2) hull() flange_level(false);
     }
 }
 
 module flange_cutout_window() {
     offset(r = flange_cutout_fillet) offset(r = -flange_cutout_fillet) difference() {
-        union() for (i = [0 : 1 : flange_cutout_segments - 1]) {
-            rotate([0, 0, (360 / flange_cutout_segments) * i]) translate([0, -flange_cutout_crossing_window / 2, 0]) square([flange_radius, flange_cutout_crossing_window]);
-        }
+        flange_cutout_crossings(flange_cutout_crossing_window);
         circle(flange_cutout_crossing_window_bore ?
             (barrel_type == "solid" ?
                     (bore_radius + barrel_wall) : (connector_radius + ((barrel_wall > bore_wall) ? barrel_wall : bore_wall))
@@ -135,6 +144,16 @@ module flange_cutout_window() {
         );
         ring(flange_radius - flange_wall, flange_radius);
     }
+}
+
+module flange_cutout_crossings(width) {
+    for (i = [0 : 1 : flange_cutout_segments - 1]) {
+        rotate([0, 0, (360 / flange_cutout_segments) * i]) flange_cutout_crossing(width);
+    }
+}
+
+module flange_cutout_crossing(width) {
+    translate([0, -width / 2, 0]) square([flange_radius, width]);
 }
 
 /* Filament clip */
@@ -150,7 +169,7 @@ module filament_clip() {
 }
 
 /* Filament hole */
-module flange_filament_hole(angle) {
+module flange_filament_hole(angle = 0) {
     r = flange_radius - 3;
     s = 30;
     a = asin(s / (2 * r));
@@ -255,3 +274,28 @@ module quick_lug(height = 0) {
     p = [[0, -2.932], [3, -1.2], [3, height], [0, height]];
     polygon(points = p, paths= [[0, 1, 2, 3]]);
 }
+
+/********
+* Label *
+*********/
+
+/* Level meter */
+module flange_level(mark = true) {
+    levels = [0.2, 0.4, 0.6, 0.8, 1];
+
+    for (i = [ 0 : len(levels) - 1 ]) {
+        r = level_radius(levels[i]);
+        if (mark) intersection() {
+            ring(r-.3, r+.3);
+            flange_cutout_crossing(flange_cutout_crossing_width);
+        }
+        if (flange_cutout_crossing_window) {
+            translate([r - 1 - label_level_font_size, flange_cutout_crossing_width / 2 + 1]) rotate([0, 180, -90]) text(str(levels[i] * label_level_full_factor), size = label_level_font_size, halign = "left");
+        } else {
+            translate([r - 1 - label_level_font_size, 0]) rotate([0, 180, -90]) text(str(levels[i] * label_level_full_factor), size = label_level_font_size, halign = "center");
+        }
+    }
+}
+
+/* Level meter */
+function level_radius(factor) = sqrt(factor * ((label_level_full_radius ? label_level_full_radius : flange_radius)^2 - barrel_radius^2) + barrel_radius^2);
