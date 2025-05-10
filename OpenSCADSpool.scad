@@ -56,6 +56,8 @@ label_level_full_diameter = 172;
 label_level_full_factor = 1000;
 // Font size
 label_level_font_size = 5.5;
+// Texture depth
+label_depth = 0.8;
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -122,7 +124,7 @@ module flange() {
         if (flange_filament_clip) flange_filament_clip();
         if (flange_filament_hole_bambu) flange_filament_hole();
         if (flange_filament_hole_inclined) flange_filament_hole(45);
-        if (label_level_meter) linear_extrude(.8) flange_level();
+        if (label_level_meter) linear_extrude(label_depth) flange_level();
     }
 }
 
