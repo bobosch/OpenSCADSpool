@@ -1,5 +1,5 @@
 // Render part of spool
-show = "bottom"; // [all, bottom, top, cutout]
+show = "bottom"; // [all, bottom, top, cutout, label]
 
 /* [Size] */
 // Spool outer diameter
@@ -58,6 +58,8 @@ label_level_full_factor = 1000;
 label_level_font_size = 5.5;
 // Texture depth
 label_depth = 0.8;
+// Use color instead of relief
+label_color = false; // [false, true]
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -86,6 +88,10 @@ if (show == "all" || show == "top") {
 
 if (flange_cutout_keep || show == "cutout") {
     spool_show(true) color([1, 1, 0]) linear_extrude(flange_width) flange_cutout();
+}
+
+if (label_color || show == "label") {
+    spool_show(true) color([0, 0, 0]) linear_extrude(label_depth) flange_level();
 }
 
 /*********
@@ -290,7 +296,10 @@ module flange_level(mark = true) {
         r = level_radius(levels[i]);
         if (mark) intersection() {
             ring(r-.3, r+.3);
-            flange_cutout_crossing(flange_cutout_crossing_width);
+            difference() {
+                flange_cutout_crossing(flange_cutout_crossing_width);
+                if(flange_cutout_crossing_window) flange_cutout_crossing(flange_cutout_crossing_window);
+            }
         }
         if (flange_cutout_crossing_window) {
             translate([r - 1 - label_level_font_size, flange_cutout_crossing_width / 2 + 1]) rotate([0, 180, -90]) text(str(levels[i] * label_level_full_factor), size = label_level_font_size, halign = "left");
