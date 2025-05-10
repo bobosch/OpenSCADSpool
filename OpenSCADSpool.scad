@@ -68,13 +68,6 @@ rounding_mesh_error = 0.001;
 
 $fn = 200;
 
-if (show == "all") {
-    translate([0, 0, outer_width]) rotate([180, 0, 0]) union() {
-        flange();
-        barrel(true);
-    }
-}
-
 if (show == "all" || show == "bottom") {
     union() {
         flange();
@@ -82,16 +75,15 @@ if (show == "all" || show == "bottom") {
     }
 }
 
-if (show == "top") {
-    union() {
+if (show == "all" || show == "top") {
+    spool_show() union() {
         flange();
         barrel(true);
     }
 }
 
 if (flange_cutout_keep || show == "cutout") {
-    linear_extrude(flange_width) flange_cutout();
-    if (show == "all") translate([0, 0, width + flange_width]) linear_extrude(flange_width) flange_cutout();
+    spool_show(true) linear_extrude(flange_width) flange_cutout();
 }
 
 /*********
@@ -106,6 +98,15 @@ module ring(inner_radius, outer_radius) {
 
 module tube(inner_radius, outer_radius, height) {
     linear_extrude(height) ring(inner_radius, outer_radius);
+}
+
+/********
+* Spool *
+*********/
+
+module spool_show(both = false) {
+    if (show == "all") translate([0, 0, outer_width]) rotate([180, 0, 0]) children();
+    if (show != "all" || both) children();
 }
 
 /*********
