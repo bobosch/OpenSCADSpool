@@ -33,7 +33,7 @@ flange_filament_clip = false; // [false, true]
 // Number of hole pairs
 flange_filament_hole_count = 4; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 // Filament holes BambuLab spool compatible
-flange_filament_hole_bambu = false; // [false, true]
+flange_filament_hole_bambulab = false; // [false, true]
 // Inclined filament holes
 flange_filament_hole_inclined = false; // [false, true]
 
@@ -60,6 +60,8 @@ label_level_font_size = 5.5;
 label_depth = 0.8;
 // Use color instead of relief
 label_color = false; // [false, true]
+// Area for BambuLab label
+label_area_bambulab = false; // [false, true]
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -134,7 +136,7 @@ module flange() {
             if (flange_cutout_crossing_window) flange_cutout_window();
         }
         if (flange_filament_clip) flange_filament_clip();
-        if (flange_filament_hole_bambu) flange_filament_hole();
+        if (flange_filament_hole_bambulab) flange_filament_hole();
         if (flange_filament_hole_inclined) flange_filament_hole(45);
         if (label_level_meter) linear_extrude(label_depth) flange_level();
     }
@@ -146,6 +148,7 @@ module flange_cutout() {
         ring(barrel_radius, flange_radius - flange_wall);
         flange_cutout_crossings(flange_cutout_crossing_width);
         if (label_level_meter && flange_cutout_crossing_window) offset(r = 2) hull() flange_level(false);
+        if (label_area_bambulab) label_area_bambulab();
     }
 }
 
@@ -309,5 +312,12 @@ module flange_level(mark = true) {
     }
 }
 
-/* Level meter */
 function level_radius(factor) = sqrt(factor * ((label_level_full_radius ? label_level_full_radius : flange_radius)^2 - barrel_radius^2) + barrel_radius^2);
+
+/* Label area */
+module label_area_bambulab() {
+    rotate([0, 0, -(flange_cutout_segments ? (360 / flange_cutout_segments / 2) : 0) - 90]) hull() {
+        translate([0, flange_radius - 15]) circle(10);
+        translate([0, flange_radius - 41]) circle(10);
+    }
+}
