@@ -9,16 +9,16 @@ barrel_diameter = 81;
 // Hole diameter
 bore_diameter = 57;
 // Inner width of the spool. Overal width is width + 2 x flange_width
-width = 59;
+width = 60;
 // Strength of the flange
 flange_width = 3.5;
 // Thickness of the outer flange border
-flange_wall = 6;
+flange_wall = 6.0;
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
 flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-// Export as AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
+// Export as 3MF or AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
 flange_cutout_keep = false; // [false, true]
 // Cutout crossing width
 flange_cutout_crossing_width = 20;
