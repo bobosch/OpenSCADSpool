@@ -63,6 +63,10 @@ label_color = false; // [false, true]
 // Area for BambuLab label
 label_area_bambulab = false; // [false, true]
 
+/* Other */
+// Small pocket (include lid) to reuse BambuLab RFID tags
+bambulab_rfid_pocket = false; // [false, true]
+
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
 barrel_radius = barrel_diameter / 2;
@@ -139,7 +143,10 @@ module flange() {
         if (flange_filament_hole_bambulab) flange_filament_hole();
         if (flange_filament_hole_inclined) flange_filament_hole(45);
         if (label_level_meter) linear_extrude(label_depth) flange_level();
+        if (bambulab_rfid_pocket) bambulab_rfid_pocket_hole();
     }
+
+    if (bambulab_rfid_pocket) linear_extrude(1) bambulab_rfid_shape();
 }
 
 /* Flange cutout */
@@ -149,6 +156,7 @@ module flange_cutout() {
         flange_cutout_crossings(flange_cutout_crossing_width);
         if (label_level_meter && flange_cutout_crossing_window) offset(r = 2) hull() flange_level(false);
         if (label_area_bambulab) label_area_bambulab();
+        if (bambulab_rfid_pocket) offset(r = 1) bambulab_rfid_pocket();
     }
 }
 
@@ -320,4 +328,24 @@ module label_area_bambulab() {
         translate([0, flange_radius - 15]) circle(10);
         translate([0, flange_radius - 41]) circle(10);
     }
+}
+
+/********
+* Other *
+*********/
+
+module bambulab_rfid_shape() {
+    translate([0, 7]) circle(10);
+    square([20, 14], center = true);
+}
+
+module bambulab_rfid_pocket(notch = false) {
+    rotate([0, 0, -(flange_cutout_segments ? (360 / flange_cutout_segments / 2) : 0) - 90]) translate([0, 47.5]) {
+        bambulab_rfid_shape();
+        if(notch) translate([7, 0]) square(5);
+    }
+}
+
+module bambulab_rfid_pocket_hole() {
+    translate([0, 0, flange_width - 1.2]) linear_extrude(1.2) bambulab_rfid_pocket(true);
 }

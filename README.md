@@ -43,3 +43,7 @@ Extend crossing window to the bore and create a gap (for cable tie)
 ### label_level_meter
 Add a level meter label to one segment crossing
 ![label_level](Documentation/Images/label_level.png)
+
+### bambulab_rfid_pocket
+Small pocket (include lid) to reuse BambuLab RFID tags
+![bambulab_rfid_pocket](Documentation/Images/bambulab_rfid_pocket.png)
