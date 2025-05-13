@@ -62,8 +62,10 @@ label_depth = 0.8;
 label_color = false; // [false, true]
 // Area for BambuLab label
 label_area_bambulab = false; // [false, true]
+// Custom label area width and height (0: disable)
+label_area = [0, 0];
 
-/* Other */
+/* [Other] */
 // Small pocket (include lid) to reuse BambuLab RFID tags
 bambulab_rfid_pocket = false; // [false, true]
 
@@ -156,6 +158,7 @@ module flange_cutout() {
         flange_cutout_crossings(flange_cutout_crossing_width);
         if (label_level_meter && flange_cutout_crossing_window) offset(r = 2) hull() flange_level(false);
         if (label_area_bambulab) label_area_bambulab();
+        if (label_area[0] && label_area[1]) label_area_custom();
         if (bambulab_rfid_pocket) offset(r = 1) bambulab_rfid_pocket();
     }
 }
@@ -327,6 +330,12 @@ module label_area_bambulab() {
     rotate([0, 0, -(flange_cutout_segments ? (360 / flange_cutout_segments / 2) : 0) - 90]) hull() {
         translate([0, flange_radius - 15]) circle(10);
         translate([0, flange_radius - 41]) circle(10);
+    }
+}
+
+module label_area_custom() {
+    rotate([0, 0, (flange_cutout_segments ? (360 / flange_cutout_segments) * 1.5 : 0) - 90]) {
+        translate([-label_area[0] / 2, bore_radius + (flange_radius - bore_radius - label_area[1]) / 2]) square([label_area[0], label_area[1]]);
     }
 }
 
