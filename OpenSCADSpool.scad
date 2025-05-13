@@ -60,14 +60,16 @@ label_level_font_size = 5.5;
 label_depth = 0.8;
 // Use color instead of relief
 label_color = false; // [false, true]
-// Area for BambuLab label
-label_area_bambulab = false; // [false, true]
+// Area for BambuLab label (position; 0: disable)
+label_area_bambulab = 0;
+// Custom label area (position; 0: disable)
+label_area_position = 0;
 // Custom label area width and height (0: disable)
-label_area = [0, 0];
+label_area_size = [90, 40];
 
 /* [Other] */
-// Small pocket (include lid) to reuse BambuLab RFID tags
-bambulab_rfid_pocket = false; // [false, true]
+// Small pocket (include lid) to reuse BambuLab RFID tags (position; 0: disable)
+bambulab_rfid_pocket = 0;
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
@@ -116,10 +118,14 @@ module tube(inner_radius, outer_radius, height) {
     linear_extrude(height) ring(inner_radius, outer_radius);
 }
 
-module segment_rotate(segments) {
+module crossings_rotate(segments) {
     for (i = [0 : 1 : segments - 1]) {
         rotate([0, 0, (360 / segments) * i]) children();
     }
+}
+
+module cutout_rotate(number = 1) {
+    rotate([0, 0, (flange_cutout_segments ? (360 / flange_cutout_segments) * (number - 0.5) : 0) - 90]) children();
 }
 
 /********
@@ -158,7 +164,7 @@ module flange_cutout() {
         flange_cutout_crossings(flange_cutout_crossing_width);
         if (label_level_meter && flange_cutout_crossing_window) offset(r = 2) hull() flange_level(false);
         if (label_area_bambulab) label_area_bambulab();
-        if (label_area[0] && label_area[1]) label_area_custom();
+        if (label_area_position) label_area_custom();
         if (bambulab_rfid_pocket) offset(r = 1) bambulab_rfid_pocket();
     }
 }
@@ -176,7 +182,7 @@ module flange_cutout_window() {
 }
 
 module flange_cutout_crossings(width) {
-    segment_rotate(flange_cutout_segments) flange_cutout_crossing(width);
+    crossings_rotate(flange_cutout_segments) flange_cutout_crossing(width);
 }
 
 module flange_cutout_crossing(width) {
@@ -200,7 +206,7 @@ module flange_filament_hole(angle = 0) {
     r = flange_radius - 3;
     s = 30;
     a = asin(s / (2 * r));
-    segment_rotate(flange_filament_hole_count) {
+    crossings_rotate(flange_filament_hole_count) {
         rotate([-angle, 0, + a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
         rotate([+angle, 0, - a]) translate([r, 0, -2]) cylinder(h = flange_width * 2 + 4, r = 1.75);
     }
@@ -232,7 +238,7 @@ module barrel_quick(top) {
         rotate_extrude() translate([bore_radius, flange_width]) chamfer(bore_wall + 3.2 + rounding_mesh_error);
         // Connector
         translate([0, 0, height_split]) {
-            segment_rotate(3) quick_hold_top(connector_radius);
+            crossings_rotate(3) quick_hold_top(connector_radius);
         }
         // Barrel wall
         barrel_wall(flange_width + width * (1 - (barrel_wall_split_percent / 100)));
@@ -241,7 +247,7 @@ module barrel_quick(top) {
         tube(bore_radius, bore_radius + bore_wall, height_split);
         // Connector
         rotate([0, 0, -25]) translate([0, 0, height_split]) {
-            segment_rotate(3) quick_hold_bottom(bore_radius + bore_wall);
+            crossings_rotate(3) quick_hold_bottom(bore_radius + bore_wall);
         }
         // Barrel wall
         barrel_wall(flange_width + width * (barrel_wall_split_percent / 100));
@@ -327,16 +333,14 @@ function level_radius(factor) = sqrt(factor * ((label_level_full_radius ? label_
 
 /* Label area */
 module label_area_bambulab() {
-    rotate([0, 0, -(flange_cutout_segments ? (360 / flange_cutout_segments / 2) : 0) - 90]) hull() {
+    cutout_rotate(label_area_bambulab) hull() {
         translate([0, flange_radius - 15]) circle(10);
         translate([0, flange_radius - 41]) circle(10);
     }
 }
 
 module label_area_custom() {
-    rotate([0, 0, (flange_cutout_segments ? (360 / flange_cutout_segments) * 1.5 : 0) - 90]) {
-        translate([-label_area[0] / 2, bore_radius + (flange_radius - bore_radius - label_area[1]) / 2]) square([label_area[0], label_area[1]]);
-    }
+    cutout_rotate(label_area_position) translate([-label_area_size[0] / 2, bore_radius + (flange_radius - bore_radius - label_area_size[1]) / 2]) square([label_area_size[0], label_area_size[1]]);
 }
 
 /********
@@ -349,7 +353,7 @@ module bambulab_rfid_shape() {
 }
 
 module bambulab_rfid_pocket(notch = false) {
-    rotate([0, 0, -(flange_cutout_segments ? (360 / flange_cutout_segments / 2) : 0) - 90]) translate([0, 47.5]) {
+    cutout_rotate(bambulab_rfid_pocket) translate([0, 47.5]) {
         bambulab_rfid_shape();
         if(notch) translate([7, 0]) square(5);
     }
