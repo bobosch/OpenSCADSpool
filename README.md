@@ -28,9 +28,9 @@ Use "X-Y contour compensation" if the cutout does not fit into the spool.
 A notch in the flange border to hold the filament
 ![flange_filament_clip](Documentation/Images/flange_filament_clip.png)
 
-### flange_filament_hole_bambu
+### flange_filament_hole_bambulab
 Two holes for filament fixation like on BambuLab spools.
-![flange_filament_hole_bambu](Documentation/Images/flange_filament_hole_bambu.png)
+![flange_filament_hole_bambulab](Documentation/Images/flange_filament_hole_bambulab.png)
 
 ### flange_filament_hole_inclined
 Filament holes 45° inclined for easier filament insertion.
@@ -47,3 +47,6 @@ Add a level meter label to one segment crossing
 ### bambulab_rfid_pocket
 Small pocket (include lid) to reuse BambuLab RFID tags
 ![bambulab_rfid_pocket](Documentation/Images/bambulab_rfid_pocket.png)
+
+## Print profiles
+[MakerWorld](https://makerworld.com/de/models/1357165-parametrizable-openscad-spool)
