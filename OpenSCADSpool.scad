@@ -5,15 +5,15 @@ show = "bottom"; // [all, bottom, top, cutout, label]
 // Spool outer diameter
 flange_diameter = 200;
 // Spool inner diameter
-barrel_diameter = 81;
+barrel_diameter = 81; // 0.1
 // Hole diameter
-bore_diameter = 57;
+bore_diameter = 57; // 0.1
 // Inner width of the spool. Overal width is width + 2 x flange_width
 width = 60;
 // Strength of the flange
-flange_width = 3.5;
+flange_width = 3.5; // 0.1
 // Thickness of the outer flange border
-flange_wall = 6.0;
+flange_wall = 6; // 0.1
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
@@ -41,9 +41,9 @@ flange_filament_hole_inclined = false; // [false, true]
 // Type of the barrel
 barrel_type = "quick"; // [solid, quick]
 // Bore wall thickness (when barrel not solid)
-bore_wall = 1.8;
+bore_wall = 1.8; // 0.1
 // Barrel wall thickness (when barrel not solid)
-barrel_wall = 1.2;
+barrel_wall = 1.2; // 0.1
 // How many percent of the barrel wall is on the bottom side
 barrel_wall_split_percent = 20;
 
@@ -55,9 +55,9 @@ label_level_full_diameter = 172;
 // Show this value on full mark
 label_level_full_factor = 1000;
 // Font size
-label_level_font_size = 5.5;
+label_level_font_size = 5.5; // 0.1
 // Texture depth
-label_depth = 0.8;
+label_depth = 0.8; // 0.1
 // Use color instead of relief
 label_color = false; // [false, true]
 // Area for BambuLab label (position; 0: disable)
