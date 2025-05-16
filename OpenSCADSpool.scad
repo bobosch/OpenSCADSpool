@@ -62,6 +62,8 @@ label_depth = 0.8; // 0.1
 label_color = false; // [false, true]
 // Area for BambuLab label (position; 0: disable)
 label_area_bambulab = 0;
+// Separate color for BambuLab label area
+label_area_bambulab_color = false; // [false, true]
 // Custom label area (position; 0: disable)
 label_area_position = 0;
 // Custom label area width and height (0: disable)
@@ -102,6 +104,10 @@ if (flange_cutout_keep || show == "cutout") {
 
 if (label_color || show == "label") {
     spool_show(true) color([0, 0, 0]) linear_extrude(label_depth) flange_level();
+}
+
+if (label_area_bambulab_color) {
+    color([1, 1, 1]) linear_extrude(0.2) label_area_bambulab();
 }
 
 /*********
@@ -152,6 +158,7 @@ module flange() {
         if (flange_filament_hole_inclined) flange_filament_hole(45);
         if (label_level_meter) linear_extrude(label_depth) flange_level();
         if (bambulab_rfid_pocket) bambulab_rfid_pocket_hole();
+        if (label_area_bambulab_color) linear_extrude(0.2) label_area_bambulab();
     }
 
     if (bambulab_rfid_pocket) linear_extrude(1) bambulab_rfid_shape();
