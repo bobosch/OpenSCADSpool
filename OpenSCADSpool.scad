@@ -83,14 +83,14 @@ rounding_mesh_error = 0.001;
 $fn = 200;
 
 if (show == "all" || show == "bottom") {
-    color([1, 1, 1]) union() {
+    color([0.5, 0.5, 0.5]) union() {
         flange();
         barrel(false);
     }
 }
 
 if (show == "all" || show == "top") {
-    spool_show() color([1, 1, 1]) union() {
+    spool_show() color([0.5, 0.5, 0.5]) union() {
         flange();
         barrel(true);
     }
