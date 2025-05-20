@@ -11,6 +11,8 @@ All sizes in mm
 This option keeps the cutout segment in the 3d model. You can use the slicer to make a nice wall:
 ![flange_cutout_keep](Documentation/Images/flange_cutout_keep.png)
 
+The option "lazy-union" in OpenSCAD preferences must be enabled.
+
 1. Set "flange_cutout_keep" to true
 2. Export as 3MF or AMF
 3. Select cutout in slicer
