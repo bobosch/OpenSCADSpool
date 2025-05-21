@@ -46,6 +46,8 @@ bore_wall = 1.8; // 0.1
 barrel_wall = 1.2; // 0.1
 // How many percent of the barrel wall is on the bottom side
 barrel_wall_split_percent = 20;
+// Notch for BambuLab filament, only on the top part of the spool (position; 0: disable)
+barrel_notch_bambulab = 0;
 
 /* [Label] */
 // Level meter
@@ -225,6 +227,7 @@ module flange_filament_hole(angle = 0) {
 module barrel(top) {
     if (barrel_type == "solid") barrel_solid();
     else if (barrel_type == "quick") barrel_quick(top);
+    if(top && barrel_notch_bambulab) barrel_notch_bambulab();
 }
 
 /* Solid barrel */
@@ -309,6 +312,14 @@ module quick_hold_top(inner_radius) {
 module quick_lug(height = 0) {
     p = [[0, -2.932], [3, -1.2], [3, height], [0, height]];
     polygon(points = p, paths= [[0, 1, 2, 3]]);
+}
+
+/* Barrel notch for BambuLab filament */
+module barrel_notch_bambulab() {
+    cutout_rotate(barrel_notch_bambulab) translate([0, barrel_radius - barrel_wall, flange_width]) rotate([-90, -90, 0]) linear_extrude(3 + barrel_wall) hull() {
+        translate([3.5, 0]) circle(1.5);
+        square([0.0001, 4], center = true);
+    }
 }
 
 /********

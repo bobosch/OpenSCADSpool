@@ -103,6 +103,7 @@
         "Filament spool BambuLab": {
             "bambulab_rfid_pocket": "0",
             "barrel_diameter": "81",
+            "barrel_notch_bambulab": "1",
             "barrel_type": "quick",
             "barrel_wall": "1.2",
             "barrel_wall_split_percent": "37",

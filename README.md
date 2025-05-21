@@ -42,6 +42,10 @@ Filament holes 45° inclined for easier filament insertion.
 Extend crossing window to the bore and create a gap (for cable tie)
 ![flange_cutout_crossing_window_bore](Documentation/Images/flange_cutout_crossing_window_bore.png)
 
+### barrel_notch_bambulab
+A small notch to hold BambuLab filament
+![barrel_notch_bambulab](Documentation/Images/barrel_notch_bambulab.png)
+
 ### label_level_meter
 Add a level meter label to one segment crossing
 ![label_level](Documentation/Images/label_level.png)
