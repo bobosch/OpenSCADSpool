@@ -17,7 +17,7 @@ flange_wall = 6; // 0.1
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
-flange_cutout_segments = 3; // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+flange_cutout_segments = 3; // [-1:1:12]
 // Export as 3MF or AMF file, set in your slicer on this object top and bottom shell layers to 0 and choose an infill pattern (see README.md for details)
 flange_cutout_keep = false; // [false, true]
 // Cutout crossing width
@@ -31,7 +31,7 @@ flange_cutout_fillet = 3;
 // Filament clip on the flange border
 flange_filament_clip = false; // [false, true]
 // Number of hole pairs
-flange_filament_hole_count = 4; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+flange_filament_hole_count = 4; // [1:1:12]
 // Filament holes BambuLab spool compatible
 flange_filament_hole_bambulab = false; // [false, true]
 // Inclined filament holes
@@ -47,7 +47,7 @@ barrel_wall = 1.2; // 0.1
 // How many percent of the barrel wall is on the bottom side
 barrel_wall_split_percent = 20;
 // Notch for BambuLab filament, only on the top part of the spool (position; 0: disable)
-barrel_notch_bambulab = 0;
+barrel_notch_bambulab = 0; // [0:1:12]
 
 /* [Label] */
 // Level meter
@@ -63,17 +63,17 @@ label_depth = 0.8; // 0.1
 // Use color instead of relief
 label_color = false; // [false, true]
 // Area for BambuLab label (position; 0: disable)
-label_area_bambulab = 0;
+label_area_bambulab = 0; // [0:1:12]
 // Separate color for BambuLab label area
 label_area_bambulab_color = false; // [false, true]
 // Custom label area (position; 0: disable)
-label_area_position = 0;
+label_area_position = 0; // [0:1:12]
 // Custom label area width and height (0: disable)
 label_area_size = [90, 40];
 
 /* [Other] */
 // Small pocket (include lid) to reuse BambuLab RFID tags (position; 0: disable)
-bambulab_rfid_pocket = 0;
+bambulab_rfid_pocket = 0; // [0:1:12]
 
 /* [Hidden] */
 flange_radius = flange_diameter / 2;
