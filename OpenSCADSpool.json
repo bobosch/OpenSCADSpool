@@ -107,7 +107,7 @@
             "barrel_type": "quick",
             "barrel_wall": "1.2",
             "barrel_wall_split_percent": "37",
-            "bore_diameter": "57",
+            "bore_diameter": "55",
             "bore_wall": "1.8",
             "flange_cutout_crossing_width": "20",
             "flange_cutout_crossing_window": "0",
@@ -132,7 +132,7 @@
             "label_level_full_factor": "1000",
             "label_level_meter": "false",
             "show": "bottom",
-            "width": "60"
+            "width": "60.2"
         },
         "Filament spool RecyclingFabrik MultiSpool": {
             "bambulab_rfid_pocket": "0",

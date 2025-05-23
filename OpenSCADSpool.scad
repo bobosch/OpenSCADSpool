@@ -9,7 +9,7 @@ barrel_diameter = 81; // 0.1
 // Hole diameter
 bore_diameter = 57; // 0.1
 // Inner width of the spool. Overal width is width + 2 x flange_width
-width = 60;
+width = 60; // 0.1
 // Strength of the flange
 flange_width = 3.5; // 0.1
 // Thickness of the outer flange border
@@ -317,7 +317,7 @@ module quick_lug(height = 0) {
 /* Barrel notch for BambuLab filament */
 module barrel_notch_bambulab() {
     cutout_rotate(barrel_notch_bambulab) translate([0, barrel_radius - barrel_wall, flange_width]) rotate([-90, -90, 0]) linear_extrude(3 + barrel_wall) hull() {
-        translate([3.5, 0]) circle(1.5);
+        translate([3, 0]) circle(1.5);
         square([0.0001, 4], center = true);
     }
 }
