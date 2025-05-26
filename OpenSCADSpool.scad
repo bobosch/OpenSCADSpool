@@ -53,7 +53,7 @@ barrel_notch_bambulab = 0; // [0:1:12]
 // Level meter
 label_level_meter = false; // [false, true]
 // Diameter of the content when full (0: max (flange_radius) )
-label_level_full_diameter = 172;
+label_level_full_diameter = 174;
 // Show this value on full mark
 label_level_full_factor = 1000;
 // Font size
