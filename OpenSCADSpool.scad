@@ -109,7 +109,7 @@ if (label_color || show == "label") {
 }
 
 if (label_area_bambulab_color) {
-    color([1, 1, 1]) linear_extrude(0.2) label_area_bambulab();
+    spool_show(true) color([1, 1, 1]) linear_extrude(0.2) label_area_bambulab();
 }
 
 /*********
@@ -132,8 +132,13 @@ module crossings_rotate(segments) {
     }
 }
 
+/**
+* Rotate to the cutout center
+*
+* @param number Segment number
+*/
 module cutout_rotate(number = 1) {
-    rotate([0, 0, (flange_cutout_segments ? (360 / flange_cutout_segments) * (number - 0.5) : 0) - 90]) children();
+    rotate([0, 0, (flange_cutout_segments ? (360 / flange_cutout_segments) * (number - 0.5) : 0)]) children();
 }
 
 /********
@@ -316,9 +321,9 @@ module quick_lug(height = 0) {
 
 /* Barrel notch for BambuLab filament */
 module barrel_notch_bambulab() {
-    cutout_rotate(barrel_notch_bambulab) translate([0, barrel_radius - barrel_wall, flange_width]) rotate([-90, -90, 0]) linear_extrude(3 + barrel_wall) hull() {
-        translate([3, 0]) circle(1.5);
-        square([0.0001, 4], center = true);
+    cutout_rotate(barrel_notch_bambulab) translate([barrel_radius - barrel_wall, 0, flange_width]) rotate([90, 0, 90]) linear_extrude(3 + barrel_wall) hull() {
+        translate([0, 3]) circle(1.5);
+        square([4, 0.0001], center = true);
     }
 }
 
@@ -352,13 +357,13 @@ function level_radius(factor) = sqrt(factor * ((label_level_full_radius ? label_
 /* Label area */
 module label_area_bambulab() {
     cutout_rotate(label_area_bambulab) hull() {
-        translate([0, flange_radius - 15]) circle(10);
-        translate([0, flange_radius - 41]) circle(10);
+        translate([flange_radius - 15, 0]) circle(10);
+        translate([flange_radius - 41, 0]) circle(10);
     }
 }
 
 module label_area_custom() {
-    cutout_rotate(label_area_position) translate([-label_area_size[0] / 2, bore_radius + (flange_radius - bore_radius - label_area_size[1]) / 2]) square([label_area_size[0], label_area_size[1]]);
+    cutout_rotate(label_area_position) translate([bore_radius + (flange_radius - bore_radius - label_area_size[1]) / 2, -label_area_size[0] / 2]) square([label_area_size[1], label_area_size[0]]);
 }
 
 /********
@@ -366,14 +371,14 @@ module label_area_custom() {
 *********/
 
 module bambulab_rfid_shape() {
-    translate([0, 7]) circle(10);
-    square([20, 14], center = true);
+    translate([7, 0]) circle(10);
+    square([14, 20], center = true);
 }
 
 module bambulab_rfid_pocket(notch = false) {
-    cutout_rotate(bambulab_rfid_pocket) translate([0, 47.5]) {
+    cutout_rotate(bambulab_rfid_pocket) translate([47.5, 0]) {
         bambulab_rfid_shape();
-        if(notch) translate([7, 0]) square(5);
+        if(notch) translate([0, 7]) square(5);
     }
 }
 
