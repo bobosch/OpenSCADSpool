@@ -46,6 +46,10 @@ Extend crossing window to the bore and create a gap (for cable tie)
 A small notch to hold BambuLab filament
 ![barrel_notch_bambulab](Documentation/Images/barrel_notch_bambulab.png)
 
+### barrel_fixing_hole
+A hole to fix the end of filament
+![barrel_fixing_hole](Documentation/Images/barrel_fixing_hole.png)
+
 ### label_level_meter
 Add a level meter label to one segment crossing
 ![label_level](Documentation/Images/label_level.png)

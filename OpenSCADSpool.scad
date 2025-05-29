@@ -48,6 +48,8 @@ barrel_wall = 1.2; // 0.1
 barrel_wall_split_percent = 20;
 // Notch for BambuLab filament, only on the top part of the spool (position; 0: disable)
 barrel_notch_bambulab = 0; // [0:1:12]
+// Hole to fix end of filament, only on the top part of the spool (position; 0: disable)
+barrel_fixing_hole = 0; // [0:1:12]
 
 /* [Label] */
 // Level meter
@@ -81,6 +83,7 @@ barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
 outer_width = width + 2 * flange_width;
 connector_radius = bore_radius + bore_wall + 3.2;
+barrel_height_top = flange_width + width * (1 - (barrel_wall_split_percent / 100));
 label_level_full_radius = label_level_full_diameter / 2;
 rounding_mesh_error = 0.001;
 
@@ -230,9 +233,14 @@ module flange_filament_hole(angle = 0) {
 * Barrel *
 **********/
 module barrel(top) {
-    if (barrel_type == "solid") barrel_solid();
-    else if (barrel_type == "quick") barrel_quick(top);
-    if(top && barrel_notch_bambulab) barrel_notch_bambulab();
+    difference() {
+        union() {
+            if (barrel_type == "solid") barrel_solid();
+            else if (barrel_type == "quick") barrel_quick(top);
+            if(top && barrel_notch_bambulab) barrel_notch_bambulab();
+        }
+        if(top && barrel_fixing_hole) barrel_fixing_hole();
+    }
 }
 
 /* Solid barrel */
@@ -256,7 +264,7 @@ module barrel_quick(top) {
             crossings_rotate(3) quick_hold_top(connector_radius);
         }
         // Barrel wall
-        barrel_wall(flange_width + width * (1 - (barrel_wall_split_percent / 100)));
+        barrel_wall(barrel_height_top);
     } else {
         // Bore wall
         tube(bore_radius, bore_radius + bore_wall, height_split);
@@ -325,6 +333,10 @@ module barrel_notch_bambulab() {
         translate([0, 3]) circle(1.5);
         square([4, 0.0001], center = true);
     }
+}
+
+module barrel_fixing_hole() {
+    cutout_rotate(barrel_fixing_hole) translate([barrel_radius - barrel_wall - 0.5, 0, barrel_height_top - 1.5]) rotate([0, 90, 0]) cylinder(barrel_wall + 1, 1, 1);
 }
 
 /********
