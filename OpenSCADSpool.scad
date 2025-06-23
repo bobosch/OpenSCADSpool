@@ -36,6 +36,8 @@ flange_filament_hole_count = 4; // [1:1:12]
 flange_filament_hole_bambulab = false; // [false, true]
 // Inclined filament holes
 flange_filament_hole_inclined = false; // [false, true]
+// Chamfer of flange
+flange_chamfer_size = 1; // 0.1
 
 /* [Barrel] */
 // Type of the barrel
@@ -83,7 +85,7 @@ barrel_radius = barrel_diameter / 2;
 bore_radius = bore_diameter / 2;
 outer_width = width + 2 * flange_width;
 connector_radius = bore_radius + bore_wall + 3.2;
-barrel_height_top = flange_width + width * (1 - (barrel_wall_split_percent / 100));
+barrel_height_top = width * (1 - (barrel_wall_split_percent / 100));
 label_level_full_radius = label_level_full_diameter / 2;
 rounding_mesh_error = 0.001;
 
@@ -158,10 +160,13 @@ module spool_show(both = false) {
 **********/
 module flange() {
     difference() {
-        linear_extrude(flange_width) difference() {
-            ring(bore_radius, flange_radius);
-            if (flange_cutout_segments > -1) flange_cutout();
-            if (flange_cutout_crossing_window) flange_cutout_window();
+        intersection() {
+            linear_extrude(flange_width) difference() {
+                ring(bore_radius, flange_radius);
+                if (flange_cutout_segments > -1) flange_cutout();
+                if (flange_cutout_crossing_window) flange_cutout_window();
+            }
+            flange_chamfer();
         }
         if (flange_filament_clip) flange_filament_clip();
         if (flange_filament_hole_bambulab) flange_filament_hole();
@@ -172,6 +177,11 @@ module flange() {
     }
 
     if (bambulab_rfid_pocket) linear_extrude(1) bambulab_rfid_shape();
+}
+
+module flange_chamfer() {
+    p = [[bore_radius + flange_chamfer_size, 0], [flange_radius - flange_chamfer_size, 0], [flange_radius, flange_chamfer_size], [flange_radius, flange_width], [bore_radius, flange_width], [bore_radius, flange_chamfer_size]];
+    rotate_extrude() polygon(points = p, paths = [[0, 1, 2, 3, 4, 5]]);
 }
 
 /* Flange cutout */
@@ -233,7 +243,7 @@ module flange_filament_hole(angle = 0) {
 * Barrel *
 **********/
 module barrel(top) {
-    difference() {
+    translate([0, 0, flange_width]) difference() {
         union() {
             if (barrel_type == "solid") barrel_solid();
             else if (barrel_type == "quick") barrel_quick(top);
@@ -246,19 +256,19 @@ module barrel(top) {
 /* Solid barrel */
 module barrel_solid() {
     difference() {
-        tube(bore_radius, barrel_radius, outer_width / 2);
-        if(flange_cutout_crossing_window_bore) linear_extrude(outer_width / 2) flange_cutout_window();
+        tube(bore_radius, barrel_radius, width / 2);
+        if(flange_cutout_crossing_window_bore) linear_extrude(width / 2) flange_cutout_window();
     }
 }
 
 /* Quick connect barrel */
 module barrel_quick(top) {
-    height_split = (outer_width / 2) + 2.1;
+    height_split = (width / 2) + 2.1;
     if (top) {
         // Bore wall
         tube(connector_radius, connector_radius + bore_wall, height_split);
         // Chamfer
-        rotate_extrude() translate([bore_radius, flange_width]) chamfer(bore_wall + 3.2 + rounding_mesh_error);
+        rotate_extrude() translate([bore_radius, 0]) bore_chamfer(bore_wall + 3.2 + rounding_mesh_error);
         // Connector
         translate([0, 0, height_split]) {
             crossings_rotate(3) quick_hold_top(connector_radius);
@@ -273,7 +283,7 @@ module barrel_quick(top) {
             crossings_rotate(3) quick_hold_bottom(bore_radius + bore_wall);
         }
         // Barrel wall
-        barrel_wall(flange_width + width * (barrel_wall_split_percent / 100));
+        barrel_wall(width * (barrel_wall_split_percent / 100));
     }
 }
 
@@ -295,7 +305,7 @@ module barrel_wall_cutout() {
     }
 }
 
-module chamfer(a) {
+module bore_chamfer(a) {
     p = [[0, 0], [a, 0], [a, a]];
     polygon(points = p, paths= [[0, 1, 2]]);
 }
@@ -329,7 +339,7 @@ module quick_lug(height = 0) {
 
 /* Barrel notch for BambuLab filament */
 module barrel_notch_bambulab() {
-    cutout_rotate(barrel_notch_bambulab) translate([barrel_radius - barrel_wall, 0, flange_width]) rotate([90, 0, 90]) linear_extrude(3 + barrel_wall) hull() {
+    cutout_rotate(barrel_notch_bambulab) translate([barrel_radius - barrel_wall, 0, 0]) rotate([90, 0, 90]) linear_extrude(3 + barrel_wall) hull() {
         translate([0, 3]) circle(1.5);
         square([4, 0.0001], center = true);
     }
