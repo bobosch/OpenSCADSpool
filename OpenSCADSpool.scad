@@ -5,15 +5,15 @@ show = "bottom"; // [all, bottom, top, cutout, label]
 // Spool outer diameter
 flange_diameter = 200;
 // Spool inner diameter
-barrel_diameter = 81; // 0.1
+barrel_diameter = 81.0; // 0.1
 // Hole diameter
-bore_diameter = 57; // 0.1
+bore_diameter = 57.0; // 0.1
 // Inner width of the spool. Overal width is width + 2 x flange_width
-width = 60; // 0.1
+width = 60.0; // 0.1
 // Strength of the flange
 flange_width = 3.5; // 0.1
 // Thickness of the outer flange border
-flange_wall = 6; // 0.1
+flange_wall = 6.0; // 0.1
 
 /* [Flange] */
 // Number of cutouts to safe material and weight (-1: disable)
@@ -37,7 +37,7 @@ flange_filament_hole_bambulab = false; // [false, true]
 // Inclined filament holes
 flange_filament_hole_inclined = false; // [false, true]
 // Chamfer of flange
-flange_chamfer_size = 1; // 0.1
+flange_chamfer_size = 1.0; // 0.1
 
 /* [Barrel] */
 // Type of the barrel
